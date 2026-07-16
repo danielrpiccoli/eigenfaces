@@ -3,7 +3,7 @@ Baixa a base de dados Olivetti Faces e organiza como matriz A (pixels x amostras
 """
 
 import numpy as np 
-from sklearn.datasets import fetch_olivietti_faces
+from sklearn.datasets import fetch_olivetti_faces
 
 def carregar_matriz_rostos():
     """
