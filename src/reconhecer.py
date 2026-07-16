@@ -7,6 +7,7 @@ próximo no espaço reduzido.
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 from carregar_dados import carregar_matriz_rostos
@@ -46,18 +47,40 @@ def main():
     media = A_treino.mean(axis=1)
     A_treino_centralizada = A_treino - media[:, None]
 
-    n_componentes = 50
-    autovetores, _ = calcular_pca(A_treino_centralizada, n_componentes)
+    # calcula todos os componentes possíveis uma vez só; depois fatiamos
+    # para testar diferentes números de componentes sem recalcular o PCA
+    n_max = min(A_treino.shape[1] - 1, 150)  # limite razoável para não pesar demais
+    autovetores_completos, _ = calcular_pca(A_treino_centralizada, n_componentes=n_max)
 
-    coef_treino = projetar(A_treino, media, autovetores)
-    coef_teste = projetar(A_teste, media, autovetores)
+    lista_ranks = [1, 2, 5, 10, 20, 30, 50, 75, 100, n_max]
+    lista_ranks = sorted(set(r for r in lista_ranks if r <= n_max))
 
-    predicoes = classificar_vizinho_mais_proximo(coef_treino, rotulos_treino, coef_teste)
+    acuracias = []
+    for r in lista_ranks:
+        autovetores = autovetores_completos[:, :r]
+        coef_treino = projetar(A_treino, media, autovetores)
+        coef_teste = projetar(A_teste, media, autovetores)
 
-    acuracia = np.mean(predicoes == rotulos_teste)
-    print(f"Acurácia com {n_componentes} componentes: {acuracia:.2%}")
+        predicoes = classificar_vizinho_mais_proximo(coef_treino, rotulos_treino, coef_teste)
+        acuracia = np.mean(predicoes == rotulos_teste)
+        acuracias.append(acuracia)
+        print(f"Acurácia com {r} componentes: {acuracia:.2%}")
+
+    melhor_indice = int(np.argmax(acuracias))
+    print(f"\nMelhor resultado: {acuracias[melhor_indice]:.2%} "
+          f"com {lista_ranks[melhor_indice]} componentes")
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(lista_ranks, acuracias, marker="o")
+    plt.xlabel("Número de componentes (rank)")
+    plt.ylabel("Acurácia")
+    plt.title("Acurácia da classificação vs. número de componentes")
+    plt.ylim(0, 1.05)
+    plt.grid(True)
+    plt.savefig("../resultados/acuracia_vs_rank.png", dpi=150)
+    print("Figura salva em ../resultados/acuracia_vs_rank.png")
+    plt.show()
 
 
 if __name__ == "__main__":
     main()
-
