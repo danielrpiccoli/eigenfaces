@@ -55,30 +55,30 @@ def main():
     lista_ranks = [1, 2, 5, 10, 20, 30, 50, 75, 100, n_max]
     lista_ranks = sorted(set(r for r in lista_ranks if r <= n_max))
 
-    acuracias = []
+    precisoes = []
     for r in lista_ranks:
         autovetores = autovetores_completos[:, :r]
         coef_treino = projetar(A_treino, media, autovetores)
         coef_teste = projetar(A_teste, media, autovetores)
 
         predicoes = classificar_vizinho_mais_proximo(coef_treino, rotulos_treino, coef_teste)
-        acuracia = np.mean(predicoes == rotulos_teste)
-        acuracias.append(acuracia)
-        print(f"Acurácia com {r} componentes: {acuracia:.2%}")
+        precisao = np.mean(predicoes == rotulos_teste)
+        precisoes.append(precisao)
+        print(f"Precisão com {r} componentes: {precisao:.2%}")
 
-    melhor_indice = int(np.argmax(acuracias))
-    print(f"\nMelhor resultado: {acuracias[melhor_indice]:.2%} "
+    melhor_indice = int(np.argmax(precisoes))
+    print(f"\nMelhor resultado: {precisoes[melhor_indice]:.2%} "
           f"com {lista_ranks[melhor_indice]} componentes")
 
     plt.figure(figsize=(6, 4))
-    plt.plot(lista_ranks, acuracias, marker="o")
+    plt.plot(lista_ranks, precisoes, marker="o")
     plt.xlabel("Número de componentes (rank)")
-    plt.ylabel("Acurácia")
-    plt.title("Acurácia da classificação vs. número de componentes")
+    plt.ylabel("Precisão")
+    plt.title("Precisão da classificação vs. número de componentes")
     plt.ylim(0, 1.05)
     plt.grid(True)
-    plt.savefig("../resultados/acuracia_vs_rank.png", dpi=150)
-    print("Figura salva em ../resultados/acuracia_vs_rank.png")
+    plt.savefig("../resultados/precisao_vs_rank.png", dpi=150)
+    print("Figura salva em ../resultados/precisao_vs_rank.png")
     plt.show()
 
 

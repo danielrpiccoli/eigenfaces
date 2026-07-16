@@ -67,8 +67,8 @@ def main():
 
     predicoes = classificar_vizinho_mais_proximo(coef_treino, rotulos_treino, coef_teste)
 
-    acuracia = np.mean(predicoes == rotulos_teste)
-    print(f"Acurácia com {n_componentes} componentes: {acuracia:.2%}")
+    precisao = np.mean(predicoes == rotulos_teste)
+    print(f"Precisão com {n_componentes} componentes: {precisao:.2%}")
     print()
 
     matriz = confusion_matrix(rotulos_teste, predicoes, labels=range(n_classes))
