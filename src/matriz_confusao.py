@@ -65,13 +65,13 @@ def main():
     coef_treino = projetar(A_treino, media, autovetores)
     coef_teste = projetar(A_teste, media, autovetores)
 
-    predicoes = classificar_vizinho_mais_proximo(coef_treino, rotulos_treino, coef_teste)
+    previsoes = classificar_vizinho_mais_proximo(coef_treino, rotulos_treino, coef_teste)
 
-    precisao = np.mean(predicoes == rotulos_teste)
+    precisao = np.mean(previsoes == rotulos_teste)
     print(f"Precisão com {n_componentes} componentes: {precisao:.2%}")
     print()
 
-    matriz = confusion_matrix(rotulos_teste, predicoes, labels=range(n_classes))
+    matriz = confusion_matrix(rotulos_teste, previsoes, labels=range(n_classes))
 
     plotar_matriz_confusao(matriz, n_classes,
                             caminho_saida="../resultados/matriz_confusao.png")
