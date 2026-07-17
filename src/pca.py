@@ -1,7 +1,7 @@
 """
-PCA implementado "na mão" via autovalores/autovetores de A^T A.
+PCA via autovalores/autovetores de A^T A.
 
-Quando o número de pixels (n) é muito maior que o número de amostras (m),
+Como o número de pixels (n) é muito maior que o número de amostras (m),
 é mais eficiente calcular os autovetores de A^T A (m x m) e depois
 recuperar os autovetores de A A^T (as eigenfaces de fato) através da
 relação:
@@ -18,8 +18,7 @@ import numpy as np
 def calcular_pca(A, n_componentes=None):
     """
     Args:
-        A: matriz (n_pixels x n_amostras), já deve estar centralizada
-           (média de cada linha subtraída)
+        A: matriz (n_pixels x n_amostras), já centralizada
         n_componentes: quantos componentes principais retornar.
            Se None, retorna todos os componentes possíveis (até n_amostras - 1).
 
@@ -38,7 +37,7 @@ def calcular_pca(A, n_componentes=None):
 
     autovalores, autovetores_M = np.linalg.eigh(M)
 
-    # eigh retorna em ordem crescente -> inverter para pegar os maiores primeiro
+    # eigh retorna em ordem crescente -> inverte para pegar os maiores primeiro
     ordem = np.argsort(autovalores)[::-1]
     autovalores = autovalores[ordem]
     autovetores_M = autovetores_M[:, ordem]
@@ -57,7 +56,7 @@ def calcular_pca(A, n_componentes=None):
 
 def variancia_explicada_acumulada(autovalores):
     """
-    Dado o vetor de autovalores (em ordem decrescente, idealmente TODOS os
+    Dado o array de autovalores (em ordem decrescente, idealmente TODOS os
     autovalores possíveis, não só os truncados), retorna a fração acumulada
     da variância total explicada por cada número crescente de componentes.
 
