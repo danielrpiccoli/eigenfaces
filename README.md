@@ -124,7 +124,3 @@ não um problema deste código. Soluções, em ordem de preferência:
 - Turk, M., & Pentland, A. (1991). *Eigenfaces for Recognition*. Journal of
   Cognitive Neuroscience.
 - Dataset: [Olivetti Faces (AT&T)](https://scikit-learn.org/stable/datasets/real_world.html#olivetti-faces-dataset)
-
-## Autor
-
-Daniel — Ciência da Computação, Instituto de Computação, UFRJ
