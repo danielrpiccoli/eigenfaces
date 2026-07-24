@@ -1,126 +1,134 @@
-# Reconhecimento Facial com Eigenfaces (PCA / SVD)
+# Facial Recognition with Eigenfaces (PCA / SVD)
 
-Projeto final de Modelos Aproximados / Computação Científica (UFRJ) — implementação
-de reconhecimento facial simplificado usando a técnica clássica de **Eigenfaces**
-(Turk & Pentland, 1991), aplicando **PCA** e **decomposição SVD** a partir dos
-fundamentos de álgebra linear: autovalores, autovetores, ortogonalidade e
-aproximação de posto baixo.
+Final project for Approximate Models / Scientific Computing (UFRJ) — a simplified
+facial recognition implementation using the classic **Eigenfaces** technique
+(Turk & Pentland, 1991), applying **PCA** and **SVD decomposition** built from
+linear algebra fundamentals: eigenvalues, eigenvectors, orthogonality, and
+low-rank approximation.
 
-## Ideia geral
+## Overview
 
-Cada rosto (imagem 64×64 pixels) é tratado como um vetor de 4096 números. A partir
-de um conjunto de 400 rostos, o PCA encontra as direções de maior variação entre
-eles — as **eigenfaces** — permitindo comprimir cada rosto para poucas dezenas de
-coeficientes sem perder a informação relevante para identificação. A identificação
-de uma pessoa nova é feita comparando, nesse espaço reduzido, a distância entre o
-rosto de teste e todos os rostos de treino conhecidos.
+Each face (a 64×64 pixel image) is treated as a vector of 4096 numbers. Given a
+set of 400 faces, PCA finds the directions of greatest variation among them —
+the **eigenfaces** — allowing each face to be compressed to a few dozen
+coefficients without losing the information relevant for identification.
+Identifying a new person is done by comparing, in this reduced space, the
+distance between the test face and all known training faces.
 
-## Destaques do projeto
+## Project highlights
 
-- PCA implementado **do zero**, via autovalores de $A^TA$ (não usa
-  `sklearn.decomposition.PCA` pronto) — com a matemática comentada no código.
-- Comparação com **SVD direta** como teste de sanidade, incluindo análise do número
-  de condição e discussão de estabilidade numérica.
-- Classificação por vizinho mais próximo com validação treino/teste apropriada
-  (sem vazamento de dados).
-- Matriz de confusão e demonstração passo a passo de uma classificação individual.
-- Notebook único e narrativo, pronto para rodar no Google Colab ou localmente.
+- PCA implemented **from scratch**, via eigendecomposition of $A^TA$ (does not
+  use the ready-made `sklearn.decomposition.PCA`) — with the math commented in
+  the code.
+- Comparison against a **direct SVD** as a sanity check, including condition
+  number analysis and a discussion of numerical stability.
+- Nearest-neighbor classification with proper train/test validation (no data
+  leakage).
+- Confusion matrix and a step-by-step walkthrough of an individual
+  classification.
+- Single narrative notebook, ready to run on Google Colab or locally.
 
 ## Dataset
 
-**Olivetti Faces** — 40 pessoas, 10 fotos cada (400 imagens), 64×64 pixels em
-escala de cinza. Carregado via `sklearn.datasets.fetch_olivetti_faces()`.
+**Olivetti Faces** — 40 people, 10 photos each (400 images), 64×64 grayscale
+pixels. Loaded via `sklearn.datasets.fetch_olivetti_faces()`.
 
-> **Nota:** o download desse dataset (hospedado no Figshare) pode falhar
-> intermitentemente com erro `403 Forbidden` em ambientes de nuvem como o Google
-> Colab — é um problema conhecido e recorrente do lado do Figshare, não do código
-> deste projeto. Veja a seção [Solução de problemas](#solução-de-problemas) abaixo.
+> **Note:** downloading this dataset (hosted on Figshare) can intermittently
+> fail with a `403 Forbidden` error in cloud environments such as Google Colab —
+> this is a known, recurring issue on Figshare's side, not a problem with this
+> project's code. See the [Troubleshooting](#troubleshooting) section below.
 
-## Estrutura do repositório
+## Repository structure
 
 ```
 eigenfaces/
 ├── README.md
-├── requisitos.txt
+├── requirements.txt
 ├── .gitignore
-├── dados/                          # dataset em cache (ignorado no git)
+├── data/                           # cached dataset (git-ignored)
 ├── src/
-│   ├── carregar_dados.py           # carrega o dataset Olivetti em matriz A
-│   ├── pca.py                      # PCA via autovalores de AᵀA, projeção, reconstrução
-│   ├── eigenfaces.py                # eigenfaces, reconstrução, variância explicada
-│   ├── reconhecer.py                # classificação por vizinho mais próximo
-│   ├── matriz_confusao.py           # matriz de confusão da classificação
-│   └── comparar_svd.py              # teste de sanidade: PCA via AᵀA vs. SVD direta
+│   ├── load_data.py                # loads the Olivetti dataset into matrix A
+│   ├── pca.py                      # PCA via eigenvalues of AᵀA, projection, reconstruction
+│   ├── eigenfaces.py               # eigenfaces, reconstruction, explained variance
+│   ├── recognize.py                # nearest-neighbor classification
+│   ├── confusion_matrix.py         # classification confusion matrix
+│   └── compare_svd.py              # sanity check: PCA via AᵀA vs. direct SVD
 ├── notebooks/
-│   └── eigenfaces_completo.ipynb    # notebook consolidado e narrativo (recomendado)
-├── resultados/                      # gráficos e imagens gerados
-└── relatorio/                       # relatório técnico completo do projeto
+│   └── eigenfaces_complete.ipynb   # consolidated narrative notebook (recommended)
+├── results/                        # generated plots and images
+└── report/                         # full technical project report
 ```
 
-## Como rodar
+## How to run
 
-### Opção 1 — Notebook (recomendado)
+### Option 1 — Notebook (recommended)
 
-Abre `notebooks/eigenfaces_completo.ipynb` localmente (Jupyter/VS Code) ou faz
-upload no [Google Colab](https://colab.research.google.com). O notebook é
-autocontido — não depende dos arquivos em `src/`, roda do início ao fim sozinho.
+Open `notebooks/eigenfaces_complete.ipynb` locally (Jupyter/VS Code) or upload it
+to [Google Colab](https://colab.research.google.com). The notebook is
+self-contained — it doesn't depend on the files in `src/`, and runs start to
+finish on its own.
 
-### Opção 2 — Scripts individuais
+### Option 2 — Individual scripts
 
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install -r requisitos.txt
+pip install -r requirements.txt
 
 cd src
-python carregar_dados.py        # testa o carregamento do dataset
-python eigenfaces.py            # eigenfaces, reconstrução, variância explicada
-python reconhecer.py            # classificação e acurácia vs. número de componentes
-python matriz_confusao.py       # matriz de confusão
-python comparar_svd.py          # comparação PCA vs. SVD direta
+python load_data.py             # tests dataset loading
+python eigenfaces.py            # eigenfaces, reconstruction, explained variance
+python recognize.py             # classification and accuracy vs. number of components
+python confusion_matrix.py      # confusion matrix
+python compare_svd.py           # PCA vs. direct SVD comparison
 ```
 
-> No Arch Linux (e outras distros com Python gerenciado pelo sistema), use um venv
-> como acima, ou adicione `--break-system-packages` ao `pip install` se preferir
-> instalar globalmente.
+> On Arch Linux (and other distros with a system-managed Python), use a venv as
+> above, or add `--break-system-packages` to `pip install` if you'd rather
+> install globally.
 
-## Resultados obtidos
+## Results
 
-| Métrica | Valor |
+| Metric | Value |
 |---|---|
-| Componentes para 95% da variância explicada | 38 |
-| Componentes para 99% da variância explicada | 177 |
-| Acurácia da classificação (50 componentes) | 94% |
-| Erros na matriz de confusão | 6 de 100 fotos de teste |
-| Diferença numérica PCA (via AᵀA) vs. SVD direta | ~10⁻⁶, consistente com a teoria |
+| Components for 95% explained variance | 38 |
+| Components for 99% explained variance | 177 |
+| Classification accuracy (50 components) | 94% |
+| Confusion matrix errors | 6 out of 100 test photos |
+| Numerical difference, PCA (via AᵀA) vs. direct SVD | ~10⁻⁶, consistent with theory |
 
-Detalhamento completo — incluindo a fundamentação matemática, os bugs encontrados
-durante o desenvolvimento e como foram corrigidos, e as respostas para as
-perguntas mais prováveis de banca — está em [`relatorio/`](./relatorio).
+Full details — including the mathematical background, bugs found during
+development and how they were fixed, and answers to the most likely questions
+from an evaluation committee — are in [`report/`](./report).
 
-## Limitações conhecidas
+## Known limitations
 
-- O classificador sempre atribui a foto de teste a alguma das 40 pessoas do
-  treino — não há rejeição de "pessoa desconhecida".
-- Assume rostos já centralizados e padronizados (como no dataset Olivetti); fotos
-  do mundo real exigiriam pré-processamento adicional (detecção e alinhamento
-  facial).
+- The classifier always assigns the test photo to one of the 40 people in the
+  training set — there is no "unknown person" rejection.
+- Assumes faces are already centered and standardized (as in the Olivetti
+  dataset); real-world photos would require additional preprocessing (face
+  detection and alignment).
 
-## Solução de problemas
+## Troubleshooting
 
-**`HTTPError: 403 Forbidden` ao rodar `fetch_olivetti_faces()` no Colab:**
-é um bloqueio intermitente do Figshare a requisições vindas de datacenters/nuvem,
-não um problema deste código. Soluções, em ordem de preferência:
-1. Tentar novamente em alguns minutos (costuma ser temporário).
-2. Rodar localmente, onde o dataset já pode estar em cache
+**`HTTPError: 403 Forbidden` when running `fetch_olivetti_faces()` on Colab:**
+this is an intermittent block by Figshare against requests coming from
+datacenters/cloud environments, not an issue with this code. Solutions, in
+order of preference:
+1. Retry after a few minutes (usually temporary).
+2. Run locally, where the dataset may already be cached
    (`~/scikit_learn_data/`).
-3. Exportar o dataset já baixado localmente para um `.npz`
-   (`np.savez_compressed("olivetti_faces.npz", imagens=dados.images, rotulos=dados.target)`),
-   fazer upload manual desse arquivo no Colab, e carregar via `np.load()` em vez de
-   `fetch_olivetti_faces()` — elimina a dependência de rede externa.
+3. Export the already-downloaded local dataset to a `.npz` file
+   (`np.savez_compressed("olivetti_faces.npz", images=data.images, targets=data.target)`),
+   manually upload that file to Colab, and load it via `np.load()` instead of
+   `fetch_olivetti_faces()` — this removes the external network dependency.
 
-## Referências
+## References
 
 - Turk, M., & Pentland, A. (1991). *Eigenfaces for Recognition*. Journal of
   Cognitive Neuroscience.
 - Dataset: [Olivetti Faces (AT&T)](https://scikit-learn.org/stable/datasets/real_world.html#olivetti-faces-dataset)
+
+## Author
+
+Daniel — Computer Science, Instituto de Computação, UFRJ
